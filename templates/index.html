@@ -1,0 +1,31 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>扫码关注自动登录</title>
+    <script>
+        let scene_id = "{{ scene_id }}";
+
+        function pollLogin() {
+            fetch(`/check_login?scene_id=${scene_id}`)
+                .then(resp => resp.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        // ✅ 登录成功，跳转页面
+                        window.location.href = `/success?openid=${data.openid}`;
+                    } else {
+                        setTimeout(pollLogin, 2000);
+                    }
+                });
+        }
+
+        window.onload = pollLogin;
+    </script>
+</head>
+<body>
+    <h2>请使用微信扫码关注公众号</h2>
+    <img src="{{ qr_url }}" width="300" alt="微信二维码">
+    <p id="status">等待扫码中...</p>
+</body>
+</html>
